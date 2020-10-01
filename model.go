@@ -675,11 +675,10 @@ func doCopy(dv, sv reflect.Value) []error {
 		}
 
 		// get dst field by name
-		dfv := dv.FieldByName(f.Name)
+		dfv := getModelField(dv, f.Name)
 
 		// validate field - exists in dst, kind and type
-		err := validateCopyField(f, sfv, dfv)
-		if err != nil {
+		if err := validateCopyField(f, sfv, dfv); err != nil {
 			if err != errFieldNotExists {
 				errs = append(errs, err)
 			}

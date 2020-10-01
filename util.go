@@ -106,10 +106,29 @@ func structValue(s interface{}) (reflect.Value, error) {
 func getField(sv reflect.Value, name string) (reflect.Value, error) {
 	field := sv.FieldByName(name)
 	if !field.IsValid() {
-		return reflect.Value{}, fmt.Errorf("Field: '%v', does not exists", name)
+		return reflect.Value{}, fmt.Errorf("Field: '%v', does not exist", name)
 	}
 
 	return field, nil
+}
+
+func getModelField(sv reflect.Value, name string) reflect.Value {
+	t := sv.Type()
+	n := t.NumField()
+	for i := 0; i < n; i++ {
+		field := t.Field(i)
+		fname := field.Name
+
+		if tag, ok := field.Tag.Lookup(TagName); ok {
+			fname = tag
+		}
+
+		if fname == name {
+			return sv.Field(i)
+		}
+	}
+
+	return reflect.Value{}
 }
 
 func zeroOf(f reflect.Value) reflect.Value {
